@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevMind AI
+
+DevMind AI is an AI-powered developer assistant designed to help developers understand, explore, and work with software projects.
+
+The application combines modern web development with LLM capabilities, including streaming responses, structured AI output, document retrieval, tool calling, AI agents, and MCP.
+
+## Features
+
+* AI-powered developer chat
+* Streaming AI responses
+* Conversation history
+* Structured AI responses
+* Document and knowledge retrieval
+* Semantic search
+* Retrieval-Augmented Generation (RAG)
+* Developer-focused AI tools
+* AI agent workflows
+* MCP integration
+* Authentication and authorization
+* AI application security
+* Evaluation and observability
+
+## Tech Stack
+
+### Frontend
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+
+### Backend
+
+* Next.js Route Handlers
+* REST APIs
+* Gemini API
+
+### Data & AI
+
+* PostgreSQL
+* Prisma
+* pgvector
+* Zod
+* Embeddings
+* RAG
+* LLM tool calling
+* AI agents
+* MCP
+
+### Infrastructure
+
+* Docker
+* Azure
+
+## Architecture
+
+```text
+┌──────────────┐
+│    React     │
+│   Next.js    │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│  Next.js API │
+│   Backend    │
+└──────┬───────┘
+       │
+       ├───────────────┐
+       ▼               ▼
+┌──────────────┐  ┌──────────────┐
+│  Gemini API  │  │ PostgreSQL   │
+│     LLM      │  │   + pgvector │
+└──────────────┘  └──────────────┘
+```
+
+## Development Roadmap
+
+### Phase 1 — AI Chat
+
+* [x] Gemini API integration
+* [x] Next.js API route
+* [x] Streaming responses
+
+### Phase 2 — Application Features
+
+* [ ] Conversation history
+* [ ] Structured AI output
+* [ ] Zod validation
+
+### Phase 3 — Knowledge & RAG
+
+* [ ] Document processing
+* [ ] Embeddings
+* [ ] PostgreSQL
+* [ ] pgvector
+* [ ] Semantic search
+* [ ] RAG
+* [ ] Source citations
+
+### Phase 4 — AI Agents
+
+* [ ] Tool calling
+* [ ] Developer tools
+* [ ] Agent workflows
+* [ ] Agent state and memory
+* [ ] MCP
+
+### Phase 5 — Production
+
+* [ ] Authentication
+* [ ] Authorization
+* [ ] Security
+* [ ] AI evaluation
+* [ ] Observability
+* [ ] Rate limiting
+* [ ] Cost optimization
+
+### Phase 6 — Deployment
+
+* [ ] Docker
+* [ ] Azure
+* [ ] Production deployment
+
+## Environment Variables
+
+Create a `.env.local` file:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+Never commit API keys or other secrets to the repository.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Status
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+DevMind AI is under active development, with new AI capabilities being added incrementally.
