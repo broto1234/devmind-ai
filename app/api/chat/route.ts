@@ -4,6 +4,8 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+let interactionId: string | null = null;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -11,6 +13,7 @@ export async function POST(request: Request) {
     const stream = await ai.interactions.create({
       model: "gemini-3.6-flash",
       input: body.message,
+      previous_interaction_id: body.conversationId,
       stream: true,
     });
 
@@ -20,12 +23,23 @@ export async function POST(request: Request) {
       async start(controller) {
         try {
           for await (const event of stream) {
+            if (event.event_type === "interaction.created") {
+              interactionId = event.interaction.id;
+
+              controller.enqueue(
+                encoder.encode(
+                  `event: interaction\ndata: ${JSON.stringify({
+                    id: interactionId,
+                  })}\n\n`,
+                ),
+              );
+            }
             if (
               event.event_type === "step.delta" &&
               event.delta.type === "text"
             ) {
               controller.enqueue(
-                encoder.encode(event.delta.text)
+                `event: text\ndata: ${JSON.stringify(event.delta.text)}\n\n`
               );
             }
           }
@@ -40,11 +54,12 @@ export async function POST(request: Request) {
 
     return new Response(readableStream, {
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
       },
     });
   } catch (error) {
+    
     console.error("Gemini API error:", error);
 
     return Response.json(

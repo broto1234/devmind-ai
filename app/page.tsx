@@ -2,14 +2,41 @@
 
 import { useState } from "react";
 
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 export default function Home() {
   const [message, setMessage] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function sendMessage() {
+    if (!message.trim()) return;
+
     setLoading(true);
-    setAnswer("");
+
+    const userMessage: Message = {
+      role: "user",
+      content: message,
+    };
+
+    setMessages((previous) => [
+      ...previous,
+      userMessage,
+    ]);
+
+    setMessage("");
+
+    setMessages((previous) => [
+      ...previous,
+      {
+        role: "assistant",
+        content: "",
+      },
+    ]);
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -17,7 +44,8 @@ export default function Home() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        message,
+        message: userMessage.content,
+        conversationId,
       }),
     });
 
@@ -34,6 +62,7 @@ export default function Home() {
     }
 
     const decoder = new TextDecoder();
+    let content = "";
 
     while (true) {
       const { done, value } = await reader.read();
@@ -46,7 +75,44 @@ export default function Home() {
         stream: true,
       });
 
-      setAnswer((previous) => previous + chunk);
+      if (chunk.startsWith("event: interaction")) {
+        const dataLine = chunk
+          .split("\n")
+          .find((line) => line.startsWith("data:"));
+
+        if (dataLine) {
+          const data = JSON.parse(dataLine.replace("data:", "").trim());
+
+          setConversationId(data.id);
+        }
+      }
+
+      if (chunk.startsWith("event: text")) {
+        const dataLine = chunk
+          .split("\n")
+          .find((line) => line.startsWith("data:"));
+
+        if (dataLine) {
+          const text = JSON.parse(
+            dataLine.replace("data:", "").trim(),
+          );
+
+          content += text;
+
+          setMessages((previous) =>
+            previous.map((msg, index) => {
+              if (index === previous.length - 1) {
+                return {
+                  ...msg,
+                  content,
+                };
+              }
+
+              return msg;
+            }),
+          );
+        }
+      }
     }
 
     setLoading(false);
@@ -74,8 +140,18 @@ export default function Home() {
         {loading ? "Thinking..." : "Send"}
       </button>
 
-      <div className="mt-8 whitespace-pre-wrap">
-        {answer}
+      <div className="mt-8 space-y-4">
+        {messages.map((msg, index) => (
+          <div key={index}>
+            <strong>
+              {msg.role === "user" ? "You" : "DevMind AI"}
+            </strong>
+
+            <p className="whitespace-pre-wrap">
+              {msg.content}
+            </p>
+          </div>
+        ))}
       </div>
     </main>
   );
