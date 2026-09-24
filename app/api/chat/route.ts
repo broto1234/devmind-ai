@@ -8,7 +8,7 @@ let interactionId: string | null = null;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json();    
 
     const stream = await ai.interactions.create({
       model: "gemini-3.6-flash",
@@ -60,8 +60,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     
-    console.error("Gemini API error:", error);
-
     return Response.json(
       {
         error: "Gemini request failed",

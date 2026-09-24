@@ -63,11 +63,13 @@ export default function Home() {
 
     const decoder = new TextDecoder();
     let content = "";
+    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
 
       if (done) {
+        console.log("FINAL BUFFER:", buffer);
         break;
       }
 
@@ -75,42 +77,53 @@ export default function Home() {
         stream: true,
       });
 
-      if (chunk.startsWith("event: interaction")) {
-        const dataLine = chunk
-          .split("\n")
-          .find((line) => line.startsWith("data:"));
+      buffer += chunk;
 
-        if (dataLine) {
-          const data = JSON.parse(dataLine.replace("data:", "").trim());
+      const events = buffer.split("\n\n");
 
-          setConversationId(data.id);
+      buffer = events.pop() ?? "";
+
+      for (const event of events) {
+        
+        if (event.startsWith("event: interaction")) {
+          const dataLine = event
+            .split("\n")
+            .find((line) => line.startsWith("data:"));
+
+          if (dataLine) {
+            const data = JSON.parse(
+              dataLine.replace("data:", "").trim(),
+            );
+
+            setConversationId(data.id);
+          }
         }
-      }
 
-      if (chunk.startsWith("event: text")) {
-        const dataLine = chunk
-          .split("\n")
-          .find((line) => line.startsWith("data:"));
+        if (event.startsWith("event: text")) {
+          const dataLine = event
+            .split("\n")
+            .find((line) => line.startsWith("data:"));
 
-        if (dataLine) {
-          const text = JSON.parse(
-            dataLine.replace("data:", "").trim(),
-          );
+          if (dataLine) {
+            const text = JSON.parse(
+              dataLine.replace("data:", "").trim(),
+            );
 
-          content += text;
+            content += text;
 
-          setMessages((previous) =>
-            previous.map((msg, index) => {
-              if (index === previous.length - 1) {
-                return {
-                  ...msg,
-                  content,
-                };
-              }
+            setMessages((previous) =>
+              previous.map((msg, index) => {
+                if (index === previous.length - 1) {
+                  return {
+                    ...msg,
+                    content,
+                  };
+                }
 
-              return msg;
-            }),
-          );
+                return msg;
+              }),
+            );
+          }
         }
       }
     }

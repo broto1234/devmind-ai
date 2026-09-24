@@ -84,7 +84,7 @@ The application combines modern web development with LLM capabilities, including
 
 ### Phase 2 — Application Features
 
-* [ ] Conversation history
+* [x] Conversation history
 * [ ] Structured AI output
 * [ ] Zod validation
 
