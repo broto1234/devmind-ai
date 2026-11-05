@@ -85,20 +85,20 @@ The application combines modern web development with LLM capabilities, including
 ### Phase 2 — Application Features
 
 * [x] Conversation history
-* [ ] Structured AI output
-* [ ] Zod validation
+* [x] Structured AI output
+* [x] Zod validation
 
-### Phase 3 — Knowledge & RAG
+### Phase 3 — Knowledge, Embeddings & RAG
 
-* [ ] Document processing
-* [ ] Embeddings
-* [ ] PostgreSQL
-* [ ] pgvector
-* [ ] Semantic search
-* [ ] RAG
-* [ ] Source citations
+* [x] Embeddings
+* [x] Semantic search
+* [x] Document processing
+* [x] PostgreSQL
+* [x] pgvector
+* [x] RAG
+* [x] Source citations
 
-### Phase 4 — AI Agents
+### Phase 4 — AI Tools, Agents & MCP
 
 * [ ] Tool calling
 * [ ] Developer tools
@@ -106,7 +106,7 @@ The application combines modern web development with LLM capabilities, including
 * [ ] Agent state and memory
 * [ ] MCP
 
-### Phase 5 — Production
+### Phase 5 — Authentication, Security & Production
 
 * [ ] Authentication
 * [ ] Authorization
