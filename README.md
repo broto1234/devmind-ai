@@ -100,11 +100,12 @@ The application combines modern web development with LLM capabilities, including
 
 ### Phase 4 — AI Tools, Agents & MCP
 
-* [ ] Tool calling
-* [ ] Developer tools
-* [ ] Agent workflows
-* [ ] Agent state and memory
-* [ ] MCP
+* [x] Tool calling
+* [x] Developer tools
+* [x] Agent workflows
+* [x] Agent state and memory
+* [x] Agent security and zod
+* [x] MCP
 
 ### Phase 5 — Authentication, Security & Production
 
