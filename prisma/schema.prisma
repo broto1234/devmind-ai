@@ -12,7 +12,12 @@ model Document {
   name      String
   createdAt DateTime @default(now())
 
-  chunks    DocumentChunk[]
+  userId String?
+  user   User? @relation(fields: [userId], references: [id])
+
+  chunks DocumentChunk[]
+
+  @@index([userId])
 }
 
 model DocumentChunk {
@@ -25,4 +30,27 @@ model DocumentChunk {
   document Document @relation(fields: [documentId], references: [id])
 
   @@index([documentId])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  sessions Session[]
+  documents Document[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
