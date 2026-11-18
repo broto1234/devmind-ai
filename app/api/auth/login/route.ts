@@ -3,6 +3,9 @@ import { loginSchema } from "@/app/lib/auth/loginSchema";
 import { verifyPassword } from "@/app/lib/auth/password";
 import { createSession } from "@/app/lib/auth/session";
 import { NextResponse } from "next/server";
+import { connectRedis } from "@/app/lib/redis";
+import { rateLimit } from "@/app/lib/rate-limit";
+import { headers } from "next/headers";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -25,6 +28,38 @@ export async function POST(request: Request) {
         details: result.error.issues,
       },
       { status: 400 },
+    );
+  }
+
+  await connectRedis();
+
+  const headersList = await headers();
+  const forwardedFor = headersList.get("x-forwarded-for");
+  const ipAddress = forwardedFor?.split(",")[0]?.trim() ?? "unknown";
+
+  const emailLimit = await rateLimit(
+    `login:email:${result.data.email}:ip:${ipAddress}`,
+    5,
+    900,
+  );
+
+  if (!emailLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again later." },
+      { status: 429 },
+    );
+  }
+
+  const ipLimit = await rateLimit(
+    `login:ip:${ipAddress}`,
+    20,
+    900,
+  );
+
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
     );
   }
 

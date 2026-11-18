@@ -109,12 +109,12 @@ The application combines modern web development with LLM capabilities, including
 
 ### Phase 5 — Authentication, Security & Production
 
-* [ ] Authentication
+* [x] Authentication
 * [ ] Authorization
 * [ ] Security
 * [ ] AI evaluation
 * [ ] Observability
-* [ ] Rate limiting
+* [x] Rate limiting
 * [ ] Cost optimization
 
 ### Phase 6 — Deployment
