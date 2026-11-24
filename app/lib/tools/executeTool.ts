@@ -4,17 +4,18 @@ import { getDocumentByIdSchema } from "./schemas";
 
 export async function executeTool(
   name: string,
+  userId: string,
   args?: Record<string, unknown>,
 ) {
   try {
     switch (name) {
       case "getDocumentCount": {
-        return await getDocumentCount();
+        return await getDocumentCount(userId);
       }
 
       case "getDocumentById": {
         const validatedArgs = getDocumentByIdSchema.parse(args);
-        return await getDocumentById(validatedArgs.documentId);
+        return await getDocumentById(validatedArgs.documentId, userId);
       }
 
       default: {

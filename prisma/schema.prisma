@@ -40,6 +40,7 @@ model User {
 
   sessions Session[]
   documents Document[]
+  conversations Conversation[]
 }
 
 model Session {
@@ -53,4 +54,15 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model Conversation {
+  id                   String   @id @default(cuid())
+  geminiInteractionId  String   @unique
+  userId               String
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

@@ -1,16 +1,46 @@
 import { GoogleGenAI } from "@google/genai";
 import { searchChunks } from "@/app/lib/embeddings/searchChunks";
+import { getCurrentUser } from "@/app/lib/auth/session";
+import { askSchema } from "@/app/lib/embeddings/askSchema";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
 export async function POST(request: Request) {
-  const body = await request.json();
 
-  const { query } = body;
+  const user = await getCurrentUser();
 
-  const results = await searchChunks(query);
+  if (!user) {
+    return Response.json(
+      { error: "Not authenticated" },
+      { status: 401 },
+    );
+  }
+  
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json(
+      { error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const result = askSchema.safeParse(body);
+
+  if (!result.success) {
+    return Response.json(
+      { error: "Invalid request data" },
+      { status: 400 },
+    );
+  }
+
+  const { query } = result.data;
+
+  const results = await searchChunks(query, user.id);
 
   if (results.length === 0) {
     return Response.json({

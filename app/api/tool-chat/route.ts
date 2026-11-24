@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { toolDefinitions } from "@/app/lib/tools/toolDefinitions";
 import { executeTool } from "@/app/lib/tools/executeTool";
+import { getCurrentUser } from "@/app/lib/auth/session";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -8,6 +9,16 @@ const ai = new GoogleGenAI({
 
 export async function POST(request: Request) {
   try {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return Response.json(
+        { error: "Not authenticated" },
+        { status: 401 },
+      );
+    }
+    
     const body = await request.json();
 
     let response = await ai.interactions.create({
@@ -39,6 +50,7 @@ export async function POST(request: Request) {
 
         const result = await executeTool(
           functionCall.name,
+          user.id,
           functionCall.arguments,
         );
 

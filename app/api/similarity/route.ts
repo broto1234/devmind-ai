@@ -1,36 +1,67 @@
 import { GoogleGenAI } from "@google/genai";
 import { cosineSimilarity } from "@/app/lib/embeddings/cosine";
+import { getCurrentUser } from "@/app/lib/auth/session";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
 export async function POST() {
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json(
+      { error: "Not authenticated" },
+      { status: 401 },
+    );
+  }
+
   const textA =
     "task: sentence similarity | query: I love programming with TypeScript.";
 
   const textB =
     "task: sentence similarity | query: TypeScript is my favorite programming language.";
 
-  const responseA = await ai.models.embedContent({
-    model: "gemini-embedding-2",
-    contents: textA,
-  });
+  try {
+    const responseA = await ai.models.embedContent({
+      model: "gemini-embedding-2",
+      contents: textA,
+    });
 
-  const responseB = await ai.models.embedContent({
-    model: "gemini-embedding-2",
-    contents: textB,
-  });
+    const responseB = await ai.models.embedContent({
+      model: "gemini-embedding-2",
+      contents: textB,
+    });
 
-  const vectorA = responseA.embeddings[0].values;
-  const vectorB = responseB.embeddings[0].values;
+    if (!responseA.embeddings?.[0]?.values || !responseB.embeddings?.[0]?.values) {
+      return Response.json(
+        { error: "Failed to generate embeddings" },
+        { status: 500 },
+      );
+    }
 
-  const similarity = cosineSimilarity(
-    vectorA,
-    vectorB,
-  );
+    const vectorA = responseA.embeddings[0].values;
+    const vectorB = responseB.embeddings[0].values;
 
-  return Response.json({
-    similarity,
-  });
+    const similarity = cosineSimilarity(
+      vectorA,
+      vectorB,
+    );
+
+    return Response.json({
+      similarity,
+    });
+  } catch (error) {
+    console.error("Similarity error:", error);
+
+    return Response.json(
+      {
+        error: "Similarity calculation failed",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }
